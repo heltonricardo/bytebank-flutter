@@ -16,6 +16,11 @@ class BytebankApp extends StatelessWidget {
 }
 
 class FormularioTransferencia extends StatelessWidget {
+  final TextEditingController _controllerBanco = TextEditingController();
+  final TextEditingController _controllerAgencia = TextEditingController();
+  final TextEditingController _controllerConta = TextEditingController();
+  final TextEditingController _controllerValor = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // return Container();
@@ -27,6 +32,7 @@ class FormularioTransferencia extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              controller: _controllerBanco,
               keyboardType: TextInputType.number,
               style: TextStyle(
                 fontSize: 24,
@@ -40,6 +46,7 @@ class FormularioTransferencia extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              controller: _controllerAgencia,
               keyboardType: TextInputType.number,
               style: TextStyle(
                 fontSize: 24,
@@ -53,6 +60,7 @@ class FormularioTransferencia extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              controller: _controllerConta,
               keyboardType: TextInputType.number,
               style: TextStyle(
                 fontSize: 24,
@@ -66,6 +74,7 @@ class FormularioTransferencia extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+                controller: _controllerValor,
                 keyboardType: TextInputType.number,
                 style: TextStyle(
                   fontSize: 24,
@@ -78,6 +87,19 @@ class FormularioTransferencia extends StatelessWidget {
           ),
           ElevatedButton(
             child: Text("Efetuar transferência"),
+            onPressed: () {
+              final int banco = int.tryParse(_controllerBanco.text);
+              final int agencia = int.tryParse(_controllerAgencia.text);
+              final int conta = int.tryParse(_controllerConta.text);
+              final double valor = double.tryParse(_controllerValor.text);
+
+              if (banco != null && agencia != null && conta != null &&
+                  valor != null) {
+                final transfer = Transferencia(banco, agencia, conta, valor);
+              debugPrint("$transfer");
+              }
+
+            },
           ),
         ]));
   }
@@ -92,9 +114,9 @@ class ListaTransferencias extends StatelessWidget {
       ),
       body: Column(
         children: [
-          ItemTransferencia(Transferencia(100.9, "123-6")),
-          ItemTransferencia(Transferencia(200.8, "456-5")),
-          ItemTransferencia(Transferencia(300.7, "789-4")),
+          ItemTransferencia(Transferencia(1, 1, 1236, 100.9)),
+          ItemTransferencia(Transferencia(1, 1, 4565, 200.8)),
+          ItemTransferencia(Transferencia(1, 1, 7894, 300.7)),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -115,15 +137,23 @@ class ItemTransferencia extends StatelessWidget {
       child: ListTile(
         leading: Icon(Icons.compare_arrows),
         title: Text("R\$ " + _transferencia.valor.toStringAsFixed(2)),
-        subtitle: Text("Conta: " + _transferencia.conta),
+        subtitle: Text(
+            "Agência $_transferencia.agencia Conta: $_transferencia.conta"),
       ),
     );
   }
 }
 
 class Transferencia {
+  final int banco;
+  final int agencia;
+  final int conta;
   final double valor;
-  final String conta;
 
-  Transferencia(this.valor, this.conta);
+  Transferencia(this.banco, this.agencia, this.conta, this.valor);
+
+  @override
+  String toString() {
+    return "$banco $agencia $conta $valor}";
+  }
 }
