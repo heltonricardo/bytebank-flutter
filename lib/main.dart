@@ -16,10 +16,11 @@ class BytebankApp extends StatelessWidget {
 }
 
 class FormularioTransferencia extends StatelessWidget {
-  final TextEditingController _controllerBanco = TextEditingController();
-  final TextEditingController _controllerAgencia = TextEditingController();
-  final TextEditingController _controllerConta = TextEditingController();
-  final TextEditingController _controllerValor = TextEditingController();
+  final TextEditingController _controladorBanco = TextEditingController();
+  final TextEditingController _controladorAgencia = TextEditingController();
+  final TextEditingController _controladorConta = TextEditingController();
+  final TextEditingController _controladorValor = TextEditingController();
+  final TextEditingController _controladorDescr = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,79 +30,76 @@ class FormularioTransferencia extends StatelessWidget {
           title: Text("Nova transferência"),
         ),
         body: Column(children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controllerBanco,
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontSize: 24,
-              ),
-              decoration: InputDecoration(
-                  icon: Icon(Icons.account_balance),
-                  labelText: "Banco",
-                  hintText: "000"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controllerAgencia,
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontSize: 24,
-              ),
-              decoration: InputDecoration(
-                  icon: Icon(Icons.business),
-                  labelText: "Agência",
-                  hintText: "0000"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controllerConta,
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontSize: 24,
-              ),
-              decoration: InputDecoration(
-                  icon: Icon(Icons.account_box_rounded),
-                  labelText: "Conta corrente",
-                  hintText: "00000"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-                controller: _controllerValor,
-                keyboardType: TextInputType.number,
-                style: TextStyle(
-                  fontSize: 24,
-                ),
-                decoration: InputDecoration(
-                  icon: Icon(Icons.monetization_on),
-                  labelText: "Valor",
-                  hintText: "0,00",
-                )),
-          ),
+          Editor(
+              label: "Banco",
+              hint: "000",
+              favicon: Icons.account_balance,
+              controller: _controladorBanco),
+          Editor(
+              label: "Agência",
+              hint: "0000",
+              favicon: Icons.business,
+              controller: _controladorAgencia),
+          Editor(
+              label: "Conta corrente",
+              hint: "00000",
+              favicon: Icons.account_box_rounded,
+              controller: _controladorConta),
+          Editor(
+              label: "Valor",
+              hint: "0,00",
+              favicon: Icons.monetization_on,
+              controller: _controladorValor),
+          Editor(
+              label: "Descrição",
+              hint: "Insira a descrição (opcional)",
+              controller: _controladorDescr),
           ElevatedButton(
             child: Text("Efetuar transferência"),
-            onPressed: () {
-              final int banco = int.tryParse(_controllerBanco.text);
-              final int agencia = int.tryParse(_controllerAgencia.text);
-              final int conta = int.tryParse(_controllerConta.text);
-              final double valor = double.tryParse(_controllerValor.text);
-
-              if (banco != null && agencia != null && conta != null &&
-                  valor != null) {
-                final transfer = Transferencia(banco, agencia, conta, valor);
-              debugPrint("$transfer");
-              }
-
-            },
-          ),
+            onPressed: () => _criaTransferencia(),
+          )
         ]));
+  }
+
+  void _criaTransferencia() {
+    final int banco = int.tryParse(_controladorBanco.text);
+    final int agencia = int.tryParse(_controladorAgencia.text);
+    final int conta = int.tryParse(_controladorConta.text);
+    final double valor = double.tryParse(_controladorValor.text);
+    final String descr = _controladorDescr.text;
+
+    if (banco != null && agencia != null && conta != null && valor != null) {
+      final transfer = Transferencia(banco, agencia, conta, valor, descr);
+      debugPrint("$transfer");
+    }
+  }
+}
+
+// TODO: Teclado alfanumérico para a descrição
+class Editor extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final IconData favicon;
+
+  Editor({this.label, this.hint, this.favicon, this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        style: TextStyle(
+          fontSize: 16,
+        ),
+        decoration: InputDecoration(
+            icon: favicon != null ? Icon(favicon) : null,
+            labelText: this.label,
+            hintText: this.hint),
+      ),
+    );
   }
 }
 
@@ -113,11 +111,7 @@ class ListaTransferencias extends StatelessWidget {
         title: Text("Transferências"),
       ),
       body: Column(
-        children: [
-          ItemTransferencia(Transferencia(1, 1, 1236, 100.9)),
-          ItemTransferencia(Transferencia(1, 1, 4565, 200.8)),
-          ItemTransferencia(Transferencia(1, 1, 7894, 300.7)),
-        ],
+        children: [],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -144,16 +138,18 @@ class ItemTransferencia extends StatelessWidget {
   }
 }
 
+// TODO: Tornar descrição opcional
 class Transferencia {
   final int banco;
   final int agencia;
   final int conta;
   final double valor;
+  final String descr;
 
-  Transferencia(this.banco, this.agencia, this.conta, this.valor);
+  Transferencia(this.banco, this.agencia, this.conta, this.valor, this.descr);
 
   @override
   String toString() {
-    return "$banco $agencia $conta $valor}";
+    return "$banco $agencia $conta $valor $descr";
   }
 }
