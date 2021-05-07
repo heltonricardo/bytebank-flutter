@@ -53,7 +53,8 @@ class FormularioTransferencia extends StatelessWidget {
           Editor(
               label: "Descrição",
               hint: "Insira a descrição (opcional)",
-              controller: _controladorDescr),
+              controller: _controladorDescr,
+              keyboard: TextInputType.text),
           ElevatedButton(
             child: Text("Efetuar transferência"),
             onPressed: () => _criaTransferencia(),
@@ -69,20 +70,21 @@ class FormularioTransferencia extends StatelessWidget {
     final String descr = _controladorDescr.text;
 
     if (banco != null && agencia != null && conta != null && valor != null) {
-      final transfer = Transferencia(banco, agencia, conta, valor, descr);
+      final transfer =
+          Transferencia(banco, agencia, conta, valor, descr: descr);
       debugPrint("$transfer");
     }
   }
 }
 
-// TODO: Teclado alfanumérico para a descrição
 class Editor extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String hint;
   final IconData favicon;
+  final TextInputType keyboard;
 
-  Editor({this.label, this.hint, this.favicon, this.controller});
+  Editor({this.label, this.hint, this.favicon, this.controller, this.keyboard});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +92,7 @@ class Editor extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         controller: controller,
-        keyboardType: TextInputType.number,
+        keyboardType: keyboard != null ? keyboard : TextInputType.number,
         style: TextStyle(
           fontSize: 16,
         ),
@@ -138,18 +140,18 @@ class ItemTransferencia extends StatelessWidget {
   }
 }
 
-// TODO: Tornar descrição opcional
 class Transferencia {
   final int banco;
   final int agencia;
   final int conta;
   final double valor;
-  final String descr;
+  final String descricao;
 
-  Transferencia(this.banco, this.agencia, this.conta, this.valor, this.descr);
+  Transferencia(this.banco, this.agencia, this.conta, this.valor, {descr})
+      : descricao = descr;
 
   @override
   String toString() {
-    return "$banco $agencia $conta $valor $descr";
+    return "$banco $agencia $conta $valor $descricao";
   }
 }
