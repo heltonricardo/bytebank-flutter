@@ -30,7 +30,7 @@ class FormularioTransferencia extends StatelessWidget {
         appBar: AppBar(
           title: Text("Nova transferência"),
         ),
-        body: Column(children: <Widget>[
+        body: ListView(children: <Widget>[
           Editor(
               label: "Banco",
               hint: "000",
@@ -57,6 +57,7 @@ class FormularioTransferencia extends StatelessWidget {
               controller: _controladorDescr,
               keyboard: TextInputType.text),
           ElevatedButton(
+            style: ButtonStyle(),
             child: Text("Efetuar transferência"),
             onPressed: () => _criaTransferencia(context),
           )
@@ -95,7 +96,7 @@ class Editor extends StatelessWidget {
         controller: controller,
         keyboardType: keyboard != null ? keyboard : TextInputType.number,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 24,
         ),
         decoration: InputDecoration(
             icon: favicon != null ? Icon(favicon) : null,
@@ -107,14 +108,20 @@ class Editor extends StatelessWidget {
 }
 
 class ListaTransferencias extends StatelessWidget {
+  final List<Transferencia> _transferencias = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Transferências"),
       ),
-      body: Column(
-        children: [],
+      body: ListView.builder(
+        itemCount: _transferencias.length,
+        itemBuilder: (context, int index) {
+          final transferencia = _transferencias[index];
+          return ItemTransferencia(transferencia);
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -122,7 +129,11 @@ class ListaTransferencias extends StatelessWidget {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormularioTransferencia();
           }));
-          resposta.then((transferencia) => {debugPrint("H: $transferencia")});
+
+          resposta.then((transferencia) {
+            _transferencias.add(transferencia);
+            debugPrint("H: $transferencia");
+          });
         },
         child: Icon(Icons.add),
       ),
