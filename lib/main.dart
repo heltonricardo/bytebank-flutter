@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(BytebankApp());
 
@@ -9,7 +10,7 @@ class BytebankApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: FormularioTransferencia(),
+        body: ListaTransferencias(),
       ),
     );
   }
@@ -57,12 +58,12 @@ class FormularioTransferencia extends StatelessWidget {
               keyboard: TextInputType.text),
           ElevatedButton(
             child: Text("Efetuar transferência"),
-            onPressed: () => _criaTransferencia(),
+            onPressed: () => _criaTransferencia(context),
           )
         ]));
   }
 
-  void _criaTransferencia() {
+  void _criaTransferencia(BuildContext context) {
     final int banco = int.tryParse(_controladorBanco.text);
     final int agencia = int.tryParse(_controladorAgencia.text);
     final int conta = int.tryParse(_controladorConta.text);
@@ -72,7 +73,7 @@ class FormularioTransferencia extends StatelessWidget {
     if (banco != null && agencia != null && conta != null && valor != null) {
       final transfer =
           Transferencia(banco, agencia, conta, valor, descr: descr);
-      debugPrint("$transfer");
+      Navigator.pop(context, transfer);
     }
   }
 }
@@ -116,6 +117,13 @@ class ListaTransferencias extends StatelessWidget {
         children: [],
       ),
       floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final Future<Transferencia> resposta =
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return FormularioTransferencia();
+          }));
+          resposta.then((transferencia) => {debugPrint("H: $transferencia")});
+        },
         child: Icon(Icons.add),
       ),
     );
