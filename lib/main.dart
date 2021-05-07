@@ -9,60 +9,32 @@ class BytebankApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: ListaTransferencias(),
-      ),
-    );
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.grey[200],
+          primaryColor: Colors.black,
+          accentColor: Colors.black,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.black))),
+        ),
+        home: ListaTransferencias());
   }
 }
 
-class FormularioTransferencia extends StatelessWidget {
+class FormularioTransferencia extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return FormularioTransferenciaState();
+  }
+}
+
+class FormularioTransferenciaState extends State<FormularioTransferencia> {
   final TextEditingController _controladorBanco = TextEditingController();
   final TextEditingController _controladorAgencia = TextEditingController();
   final TextEditingController _controladorConta = TextEditingController();
   final TextEditingController _controladorValor = TextEditingController();
   final TextEditingController _controladorDescr = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    // return Container();
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Nova transferência"),
-        ),
-        body: ListView(children: <Widget>[
-          Editor(
-              label: "Banco",
-              hint: "000",
-              favicon: Icons.account_balance,
-              controller: _controladorBanco),
-          Editor(
-              label: "Agência",
-              hint: "0000",
-              favicon: Icons.business,
-              controller: _controladorAgencia),
-          Editor(
-              label: "Conta corrente",
-              hint: "00000",
-              favicon: Icons.account_box_rounded,
-              controller: _controladorConta),
-          Editor(
-              label: "Valor",
-              hint: "0,00",
-              favicon: Icons.monetization_on,
-              controller: _controladorValor),
-          Editor(
-              label: "Descrição",
-              hint: "Insira a descrição (opcional)",
-              controller: _controladorDescr,
-              keyboard: TextInputType.text),
-          ElevatedButton(
-            style: ButtonStyle(),
-            child: Text("Efetuar transferência"),
-            onPressed: () => _criaTransferencia(context),
-          )
-        ]));
-  }
 
   void _criaTransferencia(BuildContext context) {
     final int banco = int.tryParse(_controladorBanco.text);
@@ -76,6 +48,49 @@ class FormularioTransferencia extends StatelessWidget {
           Transferencia(banco, agencia, conta, valor, descr: descr);
       Navigator.pop(context, transfer);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // return Container();
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Nova transferência"),
+        ),
+        body: SingleChildScrollView(
+          child: Column(children: <Widget>[
+            Editor(
+                label: "Banco",
+                hint: "000",
+                favicon: Icons.account_balance,
+                controller: _controladorBanco),
+            Editor(
+                label: "Agência",
+                hint: "0000",
+                favicon: Icons.business,
+                controller: _controladorAgencia),
+            Editor(
+                label: "Conta corrente",
+                hint: "00000",
+                favicon: Icons.account_box_rounded,
+                controller: _controladorConta),
+            Editor(
+                label: "Valor",
+                hint: "0,00",
+                favicon: Icons.monetization_on,
+                controller: _controladorValor),
+            Editor(
+                label: "Descrição",
+                hint: "Insira a descrição (opcional)",
+                controller: _controladorDescr,
+                keyboard: TextInputType.text),
+            ElevatedButton(
+              style: ButtonStyle(),
+              child: Text("Efetuar transferência"),
+              onPressed: () => _criaTransferencia(context),
+            )
+          ]),
+        ));
   }
 }
 
@@ -107,9 +122,22 @@ class Editor extends StatelessWidget {
   }
 }
 
-class ListaTransferencias extends StatelessWidget {
+class ListaTransferencias extends StatefulWidget {
+  /* Como _transferencias terá sua referência constante (não mudará, não será
+   * atribuída a outra coisa), deixamos sua declaração na classe Stateful e a
+   * referenciamos, na classe State (abaixo), utilizando widget.campo. Se a
+   * referência fosse algo variável, poderíamos deixar sua declaração na própria
+   * classe State. Isso é uma convenção.
+   */
   final List<Transferencia> _transferencias = [];
 
+  @override
+  State<StatefulWidget> createState() {
+    return ListaTransferenciaState();
+  }
+}
+
+class ListaTransferenciaState extends State<ListaTransferencias> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,9 +145,9 @@ class ListaTransferencias extends StatelessWidget {
         title: Text("Transferências"),
       ),
       body: ListView.builder(
-        itemCount: _transferencias.length,
+        itemCount: widget._transferencias.length,
         itemBuilder: (context, int index) {
-          final transferencia = _transferencias[index];
+          final transferencia = widget._transferencias[index];
           return ItemTransferencia(transferencia);
         },
       ),
@@ -131,8 +159,11 @@ class ListaTransferencias extends StatelessWidget {
           }));
 
           resposta.then((transferencia) {
-            _transferencias.add(transferencia);
-            debugPrint("H: $transferencia");
+            if (transferencia != null) {
+              setState(() {
+                widget._transferencias.add(transferencia);
+              });
+            }
           });
         },
         child: Icon(Icons.add),
@@ -152,8 +183,8 @@ class ItemTransferencia extends StatelessWidget {
       child: ListTile(
         leading: Icon(Icons.compare_arrows),
         title: Text("R\$ " + _transferencia.valor.toStringAsFixed(2)),
-        subtitle: Text(
-            "Agência $_transferencia.agencia Conta: $_transferencia.conta"),
+        subtitle: Text("Agência: ${_transferencia.agencia}\n" +
+            "Conta: ${_transferencia.conta}"),
       ),
     );
   }
@@ -171,6 +202,6 @@ class Transferencia {
 
   @override
   String toString() {
-    return "$banco $agencia $conta $valor $descricao";
+    return "a";
   }
 }
