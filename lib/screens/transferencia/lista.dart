@@ -66,7 +66,72 @@ class ItemTransferencia extends StatelessWidget {
         title: Text("R\$ " + _transferencia.valor.toStringAsFixed(2)),
         subtitle: Text("Agência: ${_transferencia.agencia}\n" +
             "Conta: ${_transferencia.conta}"),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return CardTransferencia(_transferencia);
+              });
+        },
       ),
+    );
+  }
+}
+
+class CardTransferencia extends StatelessWidget {
+  final Transferencia _transferencia;
+
+  CardTransferencia(this._transferencia);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            CardItem("Banco", _transferencia.banco,
+                icon: Icons.account_balance),
+            CardItem("Agência", _transferencia.agencia, icon: Icons.business),
+            CardItem("Conta", _transferencia.conta,
+                icon: Icons.account_box_rounded),
+            CardItem("Valor", _transferencia.valor,
+                icon: Icons.monetization_on),
+            Divider(),
+            CardItem("Descrição", _transferencia.descricao),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                const SizedBox(width: 8),
+                TextButton(
+                  child: const Text('Voltar'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CardItem extends StatelessWidget {
+  final String _title;
+  final Object _content;
+  final IconData _icon;
+
+  CardItem(this._title, this._content, {icon}) : _icon = icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: _icon == null ? null : Icon(_icon),
+      title: Text(_title),
+      subtitle: Text(_content.toString()),
     );
   }
 }
