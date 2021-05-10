@@ -66,6 +66,13 @@ class ItemTransferencia extends StatelessWidget {
         title: Text("R\$ " + _transferencia.valor.toStringAsFixed(2)),
         subtitle: Text("Agência: ${_transferencia.agencia}\n" +
             "Conta: ${_transferencia.conta}"),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return CardTransferencia();
+              });
+        },
       ),
     );
   }
@@ -87,14 +94,12 @@ class CardTransferencia extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                TextButton(
-                  child: const Text('BUY TICKETS'),
-                  onPressed: () { /* ... */ },
-                ),
                 const SizedBox(width: 8),
                 TextButton(
-                  child: const Text('LISTEN'),
-                  onPressed: () { /* ... */ },
+                  child: const Text('Voltar'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                 ),
                 const SizedBox(width: 8),
               ],
