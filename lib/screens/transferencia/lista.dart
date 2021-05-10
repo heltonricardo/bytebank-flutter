@@ -70,7 +70,7 @@ class ItemTransferencia extends StatelessWidget {
           showDialog(
               context: context,
               builder: (context) {
-                return CardTransferencia();
+                return CardTransferencia(_transferencia);
               });
         },
       ),
@@ -79,6 +79,10 @@ class ItemTransferencia extends StatelessWidget {
 }
 
 class CardTransferencia extends StatelessWidget {
+  final Transferencia _transferencia;
+
+  CardTransferencia(this._transferencia);
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -86,11 +90,15 @@ class CardTransferencia extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const ListTile(
-              leading: Icon(Icons.album),
-              title: Text('The Enchanted Nightingale'),
-              subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-            ),
+            CardItem("Banco", _transferencia.banco,
+                icon: Icons.account_balance),
+            CardItem("Agência", _transferencia.agencia, icon: Icons.business),
+            CardItem("Conta", _transferencia.conta,
+                icon: Icons.account_box_rounded),
+            CardItem("Valor", _transferencia.valor,
+                icon: Icons.monetization_on),
+            Divider(),
+            CardItem("Descrição", _transferencia.descricao),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
@@ -107,6 +115,23 @@ class CardTransferencia extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CardItem extends StatelessWidget {
+  final String _title;
+  final Object _content;
+  final IconData _icon;
+
+  CardItem(this._title, this._content, {icon}) : _icon = icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: _icon == null ? null : Icon(_icon),
+      title: Text(_title),
+      subtitle: Text(_content.toString()),
     );
   }
 }
