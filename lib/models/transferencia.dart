@@ -10,6 +10,7 @@ class Transferencia {
 
   @override
   String toString() {
-    return "a";
+    return "Banco: $banco, Agência: $agencia, Conta: $conta" +
+        "Valor: $valor, Descrição: $descricao";
   }
 }
