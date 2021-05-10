@@ -71,7 +71,7 @@ class ItemTransferencia extends StatelessWidget {
   }
 }
 
-class CardTrnaferencia extends StatelessWidget {
+class CardTransferencia extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
